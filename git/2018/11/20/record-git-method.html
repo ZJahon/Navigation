@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+        记录一下git的使用方法
+      
+    </title>
+
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    
+  
+  
+    
+  
+    
+  
+    
+    <link rel="shortcut icon" href="/assets/img/favicon.ico" />
+    <link rel="bookmark" href="/assets/img/favicon.ico" type="image/x-icon" />
+    
+  
+    
+  
+    
+  
+
+
+
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    
+    <link rel="stylesheet" href="/assets/css/prism-line-numbers.css">
+    
+    <link rel="stylesheet" href="/assets/css/markdown.css">
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>记录一下git的使用方法 | varenyzc的世界</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="记录一下git的使用方法" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="使用git的方法，记录一下备忘。" />
+<meta property="og:description" content="使用git的方法，记录一下备忘。" />
+<link rel="canonical" href="https://www.varen.top/git/2018/11/20/record-git-method.html" />
+<meta property="og:url" content="https://www.varen.top/git/2018/11/20/record-git-method.html" />
+<meta property="og:site_name" content="varenyzc的世界" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-11-20T16:30:33+00:00" />
+<script type="application/ld+json">
+{"datePublished":"2018-11-20T16:30:33+00:00","@type":"BlogPosting","dateModified":"2018-11-20T16:30:33+00:00","url":"https://www.varen.top/git/2018/11/20/record-git-method.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.varen.top/git/2018/11/20/record-git-method.html"},"description":"使用git的方法，记录一下备忘。","headline":"记录一下git的使用方法","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    
+
+  </head>
+
+  <body>
+    <header>
+      <div class="title">
+  <a href="/articles">
+    
+      记录一下git的使用方法
+    
+  </a>
+  <span class="title-tip">返回首页</span>
+</div>
+
+      <p id="author" style="display: none">
+        
+        varenyzc
+        
+      </p>
+
+      <div class="article-title-description">
+        <p>发表于 2018-11-20 | 本文共 65 字</p>
+      </div>
+    </header>
+
+    <div class="page-content">
+  <div class="content" id="post-content">
+    <p><p>研究了一下git的使用方法记录一下 免得忘了。大神勿喷，给需要的人看。</p>
+
+<p>首先在github上新建一个远程开源库
+<img src="https://upload-images.jianshu.io/upload_images/13517457-8251c119329ef8ee.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image" /></p>
+
+<p>然后在你需要git的文件夹目录下右键Git Bash Here
+<img src="https://upload-images.jianshu.io/upload_images/13517457-dc6c0c1d332c9720.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image" /></p>
+
+<p>命令行窗口
+然后在命令行窗口下输入代码。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git init
+git add .
+git commit -m "说明文字"
+</code></pre></div></div>
+<p>后面的步骤需要看在github上新建的仓库的HTTPS地址是多少。</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/13517457-9627a32d247749c9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="HTTPS地址" /></p>
+
+<p>然后在git命令行窗口下输入以下代码：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote add origin https://github.com/varenyzc/DGUTAirMouse.git
+
+git push -u origin master
+</code></pre></div></div>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/13517457-c21f8a21b388f43e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="git成功" /></p>
+
+<p>推送完成后会让你输入github的用户名和密码。这里因为我已经输入过用户名密码，所以不用重复输入。</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/13517457-ed53f2d99ba414a9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="github界面" /></p>
+
+<p>输入完就推送到github上啦。大功告成！在其他平台如gitlab、gogs等开源网站操作类似，只需修改HTTPS地址即可。</p>
+
+<p>也可以follow一下我的github，电子专业转行cs：<a href="https://github.com/varenyzc">https://github.com/varenyzc</a></p>
+
+<p>enjoy yourself！</p>
+
+</p>
+
+    
+    
+    <div class="reward">
+      <hr>
+      <div class="reward-qr-code" style="display: none">
+        
+        
+          
+          <div class="alipay">
+            <img src="/assets/img/alipay.webp" alt="alipay reward qr code">
+            
+            <span>支付宝打赏</span>
+            
+          </div>
+          
+        
+          
+        
+          
+        
+          
+          <div class="wechat">
+            <img src="/assets/img/wechat.webp" alt="wechat reward qr code">
+            
+            <span>微信打赏</span>
+            
+          </div>
+          
+        
+          
+        
+      </div>
+
+      
+      <p>如果你觉得本文对你有帮助，不妨请我喝杯咖啡</p>
+      
+      <div id="btn-show-reward">
+        <div onclick="showReward()">赏</div>
+      </div>
+    </div>
+    
+    
+
+    
+    
+
+      
+      <hr>
+      <div id="btn-show-comment">
+        <div onclick="showComment()">显示评论</div>
+      </div>
+      <div id="comment" style="display: none">
+        <!-- gitment 代码 -->
+        <div id="container"></div>
+        <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+        <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+        <script>
+          const myTheme = {
+            render(state, instance) {
+              const container = document.createElement('div')
+              container.lang = "en-US"
+              container.className = 'gitment-container gitment-root-container'
+              container.appendChild(instance.renderHeader(state, instance))
+              container.appendChild(instance.renderEditor(state, instance))
+              container.appendChild(instance.renderComments(state, instance))
+              container.appendChild(instance.renderFooter(state, instance))
+              return container
+            },
+          }
+
+          const gitment = new Gitment({
+            id: '2018-11-20 16:30:33 +0000',
+            owner: 'varenyzc',
+            repo: 'varenyzc.github.io',
+            oauth: {
+              client_id: '76bb22ffd69cb9a2dc11',
+              client_secret: '1bc48766be80fbcb2802679ab796d76ac4fafe44',
+            },
+            theme: myTheme,
+          })
+
+          gitment.render('container')
+        </script>
+        <!-- gitment 代码 -->
+      </div>
+      
+
+      
+    
+    
+
+    <script>
+      function showComment() {
+        if(document.getElementById("comment").style.display=="none") {
+          document.getElementById("comment").style.display="block";
+          document.getElementById("btn-show-comment").style.display="none";
+        }
+      }
+
+      function showReward() {
+        if (document.getElementsByClassName("reward-qr-code")[0].style.display=="none" ) {
+          document.getElementsByClassName("reward-qr-code")[0].style.display="block";
+        } else {
+          document.getElementsByClassName("reward-qr-code")[0].style.display="none";
+        }
+      }
+    </script>
+  </div>
+</div>
+
+
+    <footer><section class="copyright">
+  <p>Copyright &copy; 2020 <a href="https://github.com/varenyzc" target="_blank">varenyzc</a>
+  </p>
+  <p><a href="http://www.beian.miit.gov.cn/" target="_blank">粤ICP备20018647号</a></p>
+  <p>
+    　本站总访问量<span id="busuanzi_value_site_pv"></span>次，访客数<span id="busuanzi_value_site_uv"></span>人次
+  </p>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</section>
+</footer>
+
+
+    <script src="/assets/js/prism.js"></script>
+    
+    <script src="/assets/js/prism-line-numbers.js"></script>
+    
+    <script src="/assets/js/link_target.js"></script>
+
+    
+    
+
+    
+
+  </body>
+</html>

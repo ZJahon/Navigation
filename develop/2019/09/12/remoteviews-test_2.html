@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+        RemoteViews初体验
+      
+    </title>
+
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    
+  
+  
+    
+  
+    
+  
+    
+    <link rel="shortcut icon" href="/assets/img/favicon.ico" />
+    <link rel="bookmark" href="/assets/img/favicon.ico" type="image/x-icon" />
+    
+  
+    
+  
+    
+  
+
+
+
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    
+    <link rel="stylesheet" href="/assets/css/prism-line-numbers.css">
+    
+    <link rel="stylesheet" href="/assets/css/markdown.css">
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>RemoteViews初体验 | varenyzc的世界</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="RemoteViews初体验" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="通知栏和桌面小部件开发。" />
+<meta property="og:description" content="通知栏和桌面小部件开发。" />
+<link rel="canonical" href="https://www.varen.top/develop/2019/09/12/remoteviews-test.html" />
+<meta property="og:url" content="https://www.varen.top/develop/2019/09/12/remoteviews-test.html" />
+<meta property="og:site_name" content="varenyzc的世界" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-09-12T06:59:13+00:00" />
+<script type="application/ld+json">
+{"datePublished":"2019-09-12T06:59:13+00:00","@type":"BlogPosting","dateModified":"2019-09-12T06:59:13+00:00","url":"https://www.varen.top/develop/2019/09/12/remoteviews-test.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.varen.top/develop/2019/09/12/remoteviews-test.html"},"description":"通知栏和桌面小部件开发。","headline":"RemoteViews初体验","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    
+
+  </head>
+
+  <body>
+    <header>
+      <div class="title">
+  <a href="/articles">
+    
+      RemoteViews初体验
+    
+  </a>
+  <span class="title-tip">返回首页</span>
+</div>
+
+      <p id="author" style="display: none">
+        
+        varenyzc
+        
+      </p>
+
+      <div class="article-title-description">
+        <p>发表于 2019-09-12 | 本文共 777 字</p>
+      </div>
+    </header>
+
+    <div class="page-content">
+  <div class="content" id="post-content">
+    <p><p>最近在二刷《Android开发艺术探索》，看到RemoteViews，以前没接触过，遂即体验一下。</p>
+
+<blockquote>
+  <p>RemoteViews，从名字可以看出，RemoteViews应该是一种远程View，那么什么是远程View呢？如果说远程服务可能比较好理解，但是远程View的确没听说过，其实它和远程Service是一样的，RemoteViews表示的是一个View结构，它可以在其他进程中显示，由于它在其他进程中显示，为了能够更新它的界面，RemoteViews提供了一组基础的操作用于跨进程更新它的界面。这听起来有点神奇，竟然能跨进程更新界面！但是RemoteViews的确能够实现这个效果。RemoteViews在Android中的使用场景有两种：通知栏和桌面小部件。</p>
+</blockquote>
+
+<p>因为我的手机是安卓8.0版本，targetSDK是26，在写Demo过程中也发现了书中一些API已经不起作用了，例如Notification发不了、桌面小部件响应不了点击事件，下面简单写一下能起作用的Demo。</p>
+
+<h3 id="1remoteviews在通知栏上的应用">1、RemoteViews在通知栏上的应用</h3>
+<p>由于Google在8.0上新增了notification channel这个东西，书上原本的代码在新的sdk及手机上已经是不起作用了= =（我一度怀疑是魅族搞的鬼），翻阅了Google官方文档后整理出如下写法：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="nc">AppCompatActivity</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="nc">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_main</span><span class="o">);</span>
+        <span class="nc">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="n">findViewById</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button</span><span class="o">);</span>
+        <span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="nc">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="nc">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="nc">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="s">"2"</span><span class="o">,</span> <span class="nc">Toast</span><span class="o">.</span><span class="na">LENGTH_SHORT</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+                <span class="kd">final</span> <span class="nc">String</span> <span class="no">CHANNEL_ID</span> <span class="o">=</span> <span class="s">"channel_id_1"</span><span class="o">;</span>
+                <span class="kd">final</span> <span class="nc">String</span> <span class="no">CHANNEL_NAME</span> <span class="o">=</span> <span class="s">"channel_name_1"</span><span class="o">;</span>
+                <span class="nc">NotificationManager</span> <span class="n">mNotificationManager</span> <span class="o">=</span> <span class="o">(</span><span class="nc">NotificationManager</span><span class="o">)</span>
+                        <span class="n">getSystemService</span><span class="o">(</span><span class="nc">Context</span><span class="o">.</span><span class="na">NOTIFICATION_SERVICE</span><span class="o">);</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">O</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">//只在Android O之上需要渠道</span>
+                    <span class="nc">NotificationChannel</span> <span class="n">notificationChannel</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NotificationChannel</span><span class="o">(</span><span class="no">CHANNEL_ID</span><span class="o">,</span>
+                            <span class="no">CHANNEL_NAME</span><span class="o">,</span> <span class="nc">NotificationManager</span><span class="o">.</span><span class="na">IMPORTANCE_HIGH</span><span class="o">);</span>
+                    <span class="c1">//如果这里用IMPORTANCE_NOENE就需要在系统的设置里面开启渠道，</span>
+                    <span class="c1">//通知才能正常弹出</span>
+                    <span class="n">mNotificationManager</span><span class="o">.</span><span class="na">createNotificationChannel</span><span class="o">(</span><span class="n">notificationChannel</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="nc">NotificationCompat</span><span class="o">.</span><span class="na">Builder</span> <span class="n">builder</span><span class="o">=</span> <span class="k">new</span> <span class="nc">NotificationCompat</span><span class="o">.</span><span class="na">Builder</span><span class="o">(</span><span class="nc">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="no">CHANNEL_ID</span><span class="o">);</span>
+                <span class="nc">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Intent</span><span class="o">(</span><span class="nc">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="nc">MainActivity</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+                <span class="nc">PendingIntent</span> <span class="n">pendingIntent</span> <span class="o">=</span> <span class="nc">PendingIntent</span><span class="o">.</span><span class="na">getActivity</span><span class="o">(</span><span class="nc">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">intent</span><span class="o">,</span> <span class="nc">PendingIntent</span><span class="o">.</span><span class="na">FLAG_UPDATE_CURRENT</span><span class="o">);</span>
+
+
+                <span class="nc">RemoteViews</span> <span class="n">remoteViews</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RemoteViews</span><span class="o">(</span><span class="n">getPackageName</span><span class="o">(),</span> <span class="no">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">remoteview</span><span class="o">);</span>
+                <span class="n">builder</span><span class="o">.</span><span class="na">setSmallIcon</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">mipmap</span><span class="o">.</span><span class="na">ic_launcher</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">setContentTitle</span><span class="o">(</span><span class="s">"通知标题"</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">setContentText</span><span class="o">(</span><span class="s">"通知内容"</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">setAutoCancel</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">setContentIntent</span><span class="o">(</span><span class="n">pendingIntent</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">setCustomContentView</span><span class="o">(</span><span class="n">remoteViews</span><span class="o">);</span>
+
+                <span class="n">mNotificationManager</span><span class="o">.</span><span class="na">notify</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">builder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>这段代码写入了Android O需要的通知渠道，下面是效果：
+<img src="https://upload-images.jianshu.io/upload_images/13517457-27929857ceacef41.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png" /></p>
+
+<h3 id="2remoteviews在桌面小部件上的应用">2、RemoteViews在桌面小部件上的应用</h3>
+<blockquote>
+  <p>AppWidgetProvider是Android中提供的用于实现桌面小部件的类，其本质是一个广播，即BroadcastReceiver。在实际使用中，把其当成BroadcastReceiver就可以了，这样许多功能就很好理解了。</p>
+</blockquote>
+
+<p>下面是桌面小部件的开发步骤：</p>
+<h4 id="21定义小部件界面">2.1、定义小部件界面</h4>
+<p>在res/layout/下新建一个XML文件，命名为remoteview.xml，名称和内容可以自定义，这里简单写一个TextView。
+需要注意的是：RemoteViews并不支持所有的View，它所支持的类型如下：</p>
+<blockquote>
+  <p>#####Layout
+FrameLayout、LinearLayout、RelativeLayout、GridLayout</p>
+  <h5 id="view">View</h5>
+  <p>AnalogClock、Button、Chronometer、ImageButton、ImageView、ProgressBar、TextVIew、ViewFlipper、ListView、GridView、StackView、AdapterViewFlipper、ViewStub</p>
+</blockquote>
+
+<p>除了上述的View之外，RemoteViews也不支持上述view的之类以及其他类型，更不支持自定义View，观望后期Android会不会改吧。</p>
+
+<p>下面是remoteview.xml:</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="nt">&lt;LinearLayout</span> <span class="na">xmlns:android=</span><span class="s">"http://schemas.android.com/apk/res/android"</span>
+    <span class="na">android:orientation=</span><span class="s">"vertical"</span> <span class="na">android:layout_width=</span><span class="s">"match_parent"</span>
+    <span class="na">android:layout_height=</span><span class="s">"match_parent"</span>
+    <span class="na">android:background=</span><span class="s">"@color/colorPrimary"</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;TextView</span>
+        <span class="na">android:id=</span><span class="s">"@+id/text"</span>
+        <span class="na">android:layout_width=</span><span class="s">"match_parent"</span>
+        <span class="na">android:layout_height=</span><span class="s">"match_parent"</span>
+        <span class="na">android:text=</span><span class="s">"Hello World"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/LinearLayout&gt;</span>
+</code></pre></div></div>
+<h4 id="22定义小部件配置信息">2.2、定义小部件配置信息</h4>
+<p>在res/xml/下新建appwidget_provider_info.xml，名称随意，添加如下内容：</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="nt">&lt;appwidget-provider</span> <span class="na">xmlns:android=</span><span class="s">"http://schemas.android.com/apk/res/android"</span>
+    <span class="na">android:initialLayout=</span><span class="s">"@layout/remoteview"</span>
+    <span class="na">android:minHeight=</span><span class="s">"84dp"</span>
+    <span class="na">android:minWidth=</span><span class="s">"84dp"</span>
+    <span class="na">android:updatePeriodMillis=</span><span class="s">"86400000"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/appwidget-provider&gt;</span>
+</code></pre></div></div>
+<p>上面几个参数的意义很明确，initialLayout就是指小工具所使用的初始化布局，minHeight和minWidth定义小工具的最小尺寸，updatePeriodMillis定义小工具的自动更新周期，毫秒为单位，每隔一个周期，小工具的自动更新就会触发。</p>
+
+<h4 id="23定义小部件的实现类">2.3、定义小部件的实现类</h4>
+<p>这个类需要继承AppWidgetProvider，代码如下：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyAppWidgetProvider</span> <span class="kd">extends</span> <span class="nc">AppWidgetProvider</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">TAG</span> <span class="o">=</span> <span class="s">"MyAppWidgetProvider"</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">CLICK_ACTION</span> <span class="o">=</span> <span class="s">"io.varenyzc.remoteviewtest.action.CLICK"</span><span class="o">;</span>
+    
+
+    <span class="kd">public</span> <span class="nf">MyAppWidgetProvider</span><span class="o">(){</span>
+        <span class="kd">super</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReceive</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Context</span> <span class="n">context</span><span class="o">,</span> <span class="nc">Intent</span> <span class="n">intent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onReceive</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">intent</span><span class="o">);</span>
+        <span class="nc">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="no">TAG</span><span class="o">,</span> <span class="s">"onReceive: action = "</span> <span class="o">+</span> <span class="n">intent</span><span class="o">.</span><span class="na">getAction</span><span class="o">());</span>
+        <span class="c1">//这里判断自己的Action，做自己的点击事件，这里是显示一个Toast</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">intent</span><span class="o">.</span><span class="na">getAction</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="no">CLICK_ACTION</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nc">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"clicked it"</span><span class="o">,</span> <span class="nc">Toast</span><span class="o">.</span><span class="na">LENGTH_SHORT</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>   
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="24在androidmanifestxml中声明小部件">2.4、在AndroidManifest.xml中声明小部件</h4>
+<p>因为桌面小部件本质上是一个广播组件，因此必须要注册，如下所示</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      <span class="nt">&lt;receiver</span> <span class="na">android:name=</span><span class="s">".MyAppWidgetProvider"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;meta-data</span>
+                <span class="na">android:name=</span><span class="s">"android.appwidget.provider"</span>
+                <span class="na">android:resource=</span><span class="s">"@xml/appweidget_provider_info"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;/meta-data&gt;</span>
+
+            <span class="nt">&lt;intent-filter&gt;</span>
+                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"io.varenyzc.remoteviewtest.action.CLICK"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"android.appwidget.action.APPWIDGET_UPDATE"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/intent-filter&gt;</span>
+     <span class="nt">&lt;/receiver&gt;</span>
+</code></pre></div></div>
+<p>上面的代码有两个Action，其中第一个是用于识别小部件的单击行为，而第二个则是小部件的标志而必须存在，这个安卓系统的规范，如果不加，那么这个receiver就不是一个桌面小部件并且也无法出现在手机的小部件列表里。</p>
+
+<p>跟着书上的如上步骤敲完后，我以为小部件就成功了，但是还是too young too simple，当我去点击小部件时，在Android Studio始终没有出现我自定义的action事件，仅出现了android.appwidget.action.APPWIDGET_UPDATE
+<img src="https://upload-images.jianshu.io/upload_images/13517457-9ed0c1745469b4b6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png" /></p>
+
+<p>这就傻眼了，我以为是自定义的Action没对上，反复看了几遍都没问题啊，后面根据Android Studio上的log，发现了这个receiver需要动态注册！接下来是最后一步！</p>
+
+<h4 id="25新建一个application类命名为myapplication代码如下">2.5、新建一个Application类，命名为MyApplication，代码如下</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyApplication</span> <span class="kd">extends</span> <span class="nc">Application</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">IntentFilter</span> <span class="n">mIntentFilter</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">MyAppWidgetProvider</span> <span class="n">mMyAppWidgetProvider</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">();</span>
+        <span class="n">mIntentFilter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">IntentFilter</span><span class="o">();</span>
+        <span class="n">mIntentFilter</span><span class="o">.</span><span class="na">addAction</span><span class="o">(</span><span class="s">"io.varenyzc.remoteviewtest.action.CLICK"</span><span class="o">);</span>
+        <span class="n">mMyAppWidgetProvider</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyAppWidgetProvider</span><span class="o">();</span>
+        <span class="n">registerReceiver</span><span class="o">(</span><span class="n">mMyAppWidgetProvider</span><span class="o">,</span><span class="n">mIntentFilter</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>以上代码作用是在Application中动态注册receiver，还记得上面说的把AppWidgetProvider当做BrocastReceiver用吗，这里就是把其进行动态注册，将自定义Action注册进去。</p>
+
+<p>然后在AndroidManifest.xml中把这个Application引入，然后重新下到手机上，点击小部件，yes！成功了！</p>
+
+<p>以下是效果图:
+<img src="https://upload-images.jianshu.io/upload_images/13517457-339cdbcf58f78358.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png" /></p>
+
+<p>至此，RemoteViews初体验结束，enjoy yourself~</p>
+</p>
+
+    
+    
+    <div class="reward">
+      <hr>
+      <div class="reward-qr-code" style="display: none">
+        
+        
+          
+          <div class="alipay">
+            <img src="/assets/img/alipay.webp" alt="alipay reward qr code">
+            
+            <span>支付宝打赏</span>
+            
+          </div>
+          
+        
+          
+        
+          
+        
+          
+          <div class="wechat">
+            <img src="/assets/img/wechat.webp" alt="wechat reward qr code">
+            
+            <span>微信打赏</span>
+            
+          </div>
+          
+        
+          
+        
+      </div>
+
+      
+      <p>如果你觉得本文对你有帮助，不妨请我喝杯咖啡</p>
+      
+      <div id="btn-show-reward">
+        <div onclick="showReward()">赏</div>
+      </div>
+    </div>
+    
+    
+
+    
+    
+
+      
+      <hr>
+      <div id="btn-show-comment">
+        <div onclick="showComment()">显示评论</div>
+      </div>
+      <div id="comment" style="display: none">
+        <!-- gitment 代码 -->
+        <div id="container"></div>
+        <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+        <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+        <script>
+          const myTheme = {
+            render(state, instance) {
+              const container = document.createElement('div')
+              container.lang = "en-US"
+              container.className = 'gitment-container gitment-root-container'
+              container.appendChild(instance.renderHeader(state, instance))
+              container.appendChild(instance.renderEditor(state, instance))
+              container.appendChild(instance.renderComments(state, instance))
+              container.appendChild(instance.renderFooter(state, instance))
+              return container
+            },
+          }
+
+          const gitment = new Gitment({
+            id: '2019-09-12 06:59:13 +0000',
+            owner: 'varenyzc',
+            repo: 'varenyzc.github.io',
+            oauth: {
+              client_id: '76bb22ffd69cb9a2dc11',
+              client_secret: '1bc48766be80fbcb2802679ab796d76ac4fafe44',
+            },
+            theme: myTheme,
+          })
+
+          gitment.render('container')
+        </script>
+        <!-- gitment 代码 -->
+      </div>
+      
+
+      
+    
+    
+
+    <script>
+      function showComment() {
+        if(document.getElementById("comment").style.display=="none") {
+          document.getElementById("comment").style.display="block";
+          document.getElementById("btn-show-comment").style.display="none";
+        }
+      }
+
+      function showReward() {
+        if (document.getElementsByClassName("reward-qr-code")[0].style.display=="none" ) {
+          document.getElementsByClassName("reward-qr-code")[0].style.display="block";
+        } else {
+          document.getElementsByClassName("reward-qr-code")[0].style.display="none";
+        }
+      }
+    </script>
+  </div>
+</div>
+
+
+    <footer><section class="copyright">
+  <p>Copyright &copy; 2020 <a href="https://github.com/varenyzc" target="_blank">varenyzc</a>
+  </p>
+  <p><a href="http://www.beian.miit.gov.cn/" target="_blank">粤ICP备20018647号</a></p>
+  <p>
+    　本站总访问量<span id="busuanzi_value_site_pv"></span>次，访客数<span id="busuanzi_value_site_uv"></span>人次
+  </p>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</section>
+</footer>
+
+
+    <script src="/assets/js/prism.js"></script>
+    
+    <script src="/assets/js/prism-line-numbers.js"></script>
+    
+    <script src="/assets/js/link_target.js"></script>
+
+    
+    
+
+    
+
+  </body>
+</html>
